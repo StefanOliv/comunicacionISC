@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %} Registro proyecto | {% endblock %}
+
+{% block content %}
+<div class="p-10 lg:p-20 text-center">
+    <h1 class="text-3xl lg:text-3xl text-white">Registro proyecto</h1>
+</div>
+<form method="POST" action="." class="lg:w-1/4 px-4 mx-auto">
+    {%csrf_token%}
+    <div class="mb-5">
+        <label for="id_nombreproyecto" class="text-lg text-white">Nombre de proyecto: </label>
+        <input type="tex" name="nombreproyecto" required id="id_nombreproyecto"
+            class="w-full mt-2 px-4 py-2 rounded-xl">
+    </div>
+
+    <div class="mb-5">
+        <label for="id_descripcionProyecto" class="text-lg text-white">Descripcion proyecto: </label>
+        <textarea type="tex" name="descripcionProyecto" required id="id_descripcionProyecto"
+            class="w-full mt-2 px-4 py-2 rounded-xl"></textarea>
+    </div>
+
+    <div class="mb-5">
+        <label for="id_fk_user" class="text-lg text-white">Usuario: </label>
+        <select type="tex" name="fk_user" required id="id_fk_user" class="w-full mt-2 px-4 py-2 rounded-xl">
+        <option value="" selected>Admin</option>
+        <option value="14">Maria</option>
+        <option value="16">Oliverio</option>
+        <option value="2">Stefan</option>
+        <option value="1">Admin</option>
+        </select>
+    </div>
+    <button class="px-5 py-3 rounded-xl text-white bg-lime-700 hover:bg-lime-600" type="submit">Registrarse</button>
+</form>
+{% endblock %}

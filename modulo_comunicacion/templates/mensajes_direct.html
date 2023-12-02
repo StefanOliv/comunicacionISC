@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %} Mensajes | {% endblock %}
+
+{% block content %}
+<div class="contedorpriv">
+    {% if request.user.is_authenticated %}
+    <div class="mensajesdirectos">
+        <div class="text-center">
+            <p class="text-3xl lg:text-2xl text-white">- {{request.user.username}} -</p><br>
+        </div>
+        <p class="titulo_mensdi">Mensajes directos</p>
+        {% for user in users %}
+        <a class="usuarioslink" href="{% url 'msg' username=user.username %}">{{user.username}}</a>
+        {% endfor %}
+    </div>
+    {%endif%}
+    <div class="flex-auto w-700">
+        <div class="flex-initial w-700 p-10 lg:p-4 text-left">
+            <h1 class="text-3xl lg:text-4xl text-white"># {{user_obj.username}}</h1><br>
+        </div>
+        <div class="lg:w-2/3 mx-4 lg:mx-auto p-4 bg-white rounded-xl">
+
+            <div class="chat-messages space-y-3" id="chat-body">
+                {%for message in messages%}
+                {% if message.sender == request.user.username %}
+                <div class="p-4 m-0 bg-gray-400 rounded-xl">
+                    <p> {{ message.sender}}</p>
+                    <p> {{ message.message }}</p>
+                </div>
+                {% else %}
+                <div class="p-4 m-0 bg-gray-200 rounded-xl">
+                    <p> {{ message.sender}}</p>
+                    <p> {{ message.message }}</p>
+                </div>
+                {% endif %}
+                {%endfor%}
+
+                {%for file in files%}
+                <div class="p-4 m-0 bg-gray-400 rounded-xl">
+                    <a href="{{file.filepriv.url}}" target="_blank">Descargar - {{ file.filepriv.name }}</a>
+                </div>
+                {%endfor%}
+            </div>
+        </div>
+        <div class="lg:w-2/3 mt-6 mx-4 lg:mx-auto p-4 bg-white rounded.xl">
+            <form method="post" class="flex" enctype="multipart/form-data">
+                {%csrf_token%}
+                <input type="text" name="content" class="flex-1 mr-3" placeholder="Escribe tu mensaje..."
+                    id="chat-privado-input">
+                <button class="px-5 py-3 rounded-xl text-white bg-teal-600 hover:bg-teal-700" type="submit"
+                    value="upload" id="chat-privado-enviar">Enviar</button>
+
+                <div class="file-select"><input name="file" type="file" required id="id_file"></div>
+                <button class="px-5 py-3 rounded-xl text-white bg-teal-600 hover:bg-teal-700" type="submit"
+                    value="upload" id="chat-privado-enviar">Subir</button>
+
+
+            </form>
+        </div>
+    </div>
+</div>
+
+{{user_obj.id|json_script:"json-username"}}
+{{request.user.username|json_script:"json-message-username"}}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const id = JSON.parse(document.getElementById('json-username').textContent);
+    const message_username = JSON.parse(document.getElementById('json-message-username').textContent);
+
+    const socket = new WebSocket(
+        'ws://'
+        + window.location.host
+        + '/msg/'
+        + id
+        + '/'
+    );
+    socket.onopen = function (e) {
+        console.log('CONECTADO');
+    }
+    socket.onclose = function (e) {
+        console.log('DESCONECTADO');
+    }
+    socket.onerror = function (e) {
+        console.log(e);
+    }
+    function scrollBottom() {
+        let msgbox = document.querySelector("chat-body")
+        msgbox.scrollTop = msgbox.scrollHeight
+    }
+    socket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        if (data.username == message_username) {
+            let html = '<div class="p-4 m-0 bg-gray-400 rounded-xl">';
+            html += '<p class="font-semiblold">' + data.username + '</p>';
+            html += '<p>' + data.message + '</p></div>';
+            document.querySelector('#chat-body').innerHTML += html;
+            scrollBottom();
+        } else {
+            let html = '<div class="p-4 m-0 bg-gray-200 rounded-xl">';
+            html += '<p class="font-semiblold">' + data.username + '</p>';
+            html += '<p>' + data.message + '</p></div>';
+            document.querySelector('#chat-body').innerHTML += html;
+            scrollBottom();
+        }
+    };
+
+    document.querySelector('#chat-privado-enviar').onclick = function (e) {
+        e.preventDefault();
+        const message_input = document.querySelector('#chat-privado-input');
+        const message = message_input.value;
+
+        socket.send(JSON.stringify({
+            'message': message,
+            'username': message_username,
+        }));
+        message_input.value = '';
+        return false;
+    }
+
+
+</script>
+{% endblock %}

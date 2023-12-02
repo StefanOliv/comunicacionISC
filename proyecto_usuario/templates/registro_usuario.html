@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %} Registro | {% endblock %}
+
+{% block content %}
+<div class="p-10 lg:p-20 text-center">
+    <h1 class="text-3xl lg:text-3xl text-white">Registro usuario</h1>
+</div>
+<form method="POST" action="." class="lg:w-1/4 px-4 mx-auto">
+    {%csrf_token%}
+    <div class="mb-5">
+        <label class="text-lg text-white">Nombre de usuario: </label>
+        <input type="tex" name="username" class="w-full mt-2 px-4 py-2 rounded-xl">
+    </div>
+    <div class="mb-5">
+        <label class="text-lg text-white">Contraseña: </label>
+        <input type="password" name="password1" class="w-full mt-2 px-4 py-2 rounded-xl">
+    </div>
+    <div class="mb-5">
+        <label class="text-lg text-white">Confirme su contraseña: </label>
+        <input type="password" name="password2" class="w-full mt-2 px-4 py-2 rounded-xl">
+    </div>
+    {% if registro_altausuario.errors %}
+        {% for field in registro_altausuario %}
+            {% for error in field.errors %}
+                <div class="mb-5 p-4 rounded-xl bg-red-300 text-white">
+                    <p>{{ error|escape }}</p>
+                </div>
+            {%endfor%}
+        {%endfor%}
+    {%endif%}
+
+    <button class="px-5 py-3 rounded-xl text-white bg-lime-700 hover:bg-lime-600" type="submit">Registrarse</button>
+</form>
+{% endblock %}

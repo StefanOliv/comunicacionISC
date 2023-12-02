@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %} Index | {% endblock %}
+
+{% block content %}
+<div class="contenedorchat">
+    {% if request.user.is_authenticated %}
+    <div class="mensajesdirectos">
+        <p class="titulo_mensdi">Mensajes directos</p>
+        {% for user in users %}
+        <a class="usuarioslink" href="{% url 'msg' username=user.username %}">{{user.username}}</a>
+        {% endfor %}
+    </div>
+    {%endif%}
+    <div class="flex-initial w-700 p-10 lg:p-20 text-center">
+        {% if request.user.is_authenticated %}
+        <p class="text-3xl text-white">¡Hola {{ request.user.username | upper }}, bienvenid@!</p>
+        {%endif%}
+        <h1 class="text-3xl lg:text-6xl text-white"><br> Modulo de comunicacion <br>(Residencias)</h1>
+    </div>
+</div>
+
+
+{% endblock %}

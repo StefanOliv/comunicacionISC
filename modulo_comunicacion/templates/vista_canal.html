@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ vistaCanal.nombrecanal }} | {% endblock %}
+
+{% block content %}
+<div class="flex-initial w-700 p-10 lg:p-5 text-center">
+    <h1 class="text-3xl lg:text-4xl text-white"># {{ vistaCanal.nombrecanal }}</h1>
+</div>
+
+<div class="lg:w-2/4 mx-4 lg:mx-auto p-4 bg-white rounded-xl">
+    <div class="chat-messages space-y-3" id="chat-mensajes">
+        {%for message in mensajesenviados%}
+        <div class="p-4 bg-gray-200 rounded-xl">
+            <p class="font-semiblold"> {{ message.user.username }}</p>
+            <p> {{ message.contenido }}</p>
+        </div>
+        {%endfor%}
+    </div>
+</div>
+<div class="lg:w-2/4 mt-6 mx-4 lg:mx-auto p-4 bg-white rounded.xl">
+    <form method="POST" class="flex" enctype="multipart/form-data">
+        {%csrf_token%}
+        <input type="text" name="content" class="flex-1 mr-3" placeholder="Escribe tu mensaje..."
+            id="chat-mensaje-input">
+        <button class="px-5 py-3 rounded-xl text-white bg-teal-600 hover:bg-teal-700" type="submit" value="upload"
+            id="chat-mensaje-enviar">Enviar</button>
+        <div class="file-select"><input name="file" type="file" required id="id_file"></div>
+        <!-- <button class="px-5 py-3 rounded-xl text-white bg-teal-600 hover:bg-teal-700" type="submit" value="upload"
+            id="chat-privado-enviar">Subir</button> -->
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ vistaCanal.slug|json_script:"json-canalnombre" }}
+{{ request.user.username|json_script:"json-username" }}
+
+<script>
+    const canalNombre = JSON.parse(document.getElementById('json-canalnombre').textContent);
+    const userNombre = JSON.parse(document.getElementById('json-username').textContent);
+    const chatSocket = new WebSocket(
+        'ws://'
+        + window.location.host
+        + '/ws/'
+        + canalNombre
+        + '/'
+    );
+
+    chatSocket.onmessage = function (e) {
+        console.log('onmessage')
+        const data = JSON.parse(e.data);
+        if (data.messege) {
+            let html = '<div class="p-4 bg-gray-200 rounded-xl">';
+            html += '<p class="font-semiblold">' + data.usernombre + '</p>';
+            html += '<p>' + data.messege + '</p></div>';
+            document.querySelector('#chat-mensajes').innerHTML += html;
+        } else {
+            alert('El menseje no salio!');
+        }
+    }
+    chatSocket.onclose = function (e) {
+        console.log('onclose')
+    }
+
+    //
+    document.querySelector('#chat-mensaje-enviar').onclick = function (e) {
+        e.preventDefault();
+        const messageInputDom = document.querySelector('#chat-mensaje-input');
+        const mensajeescrito = messageInputDom.value;
+
+        chatSocket.send(JSON.stringify({
+            'messege': mensajeescrito,
+            'usernombre': userNombre,
+            'canal': canalNombre,
+        }));
+        messageInputDom.value = '';
+        return false;
+    }
+
+</script>
+{% endblock %}

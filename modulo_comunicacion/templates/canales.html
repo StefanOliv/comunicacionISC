@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block title %} Canales | {% endblock %}
+
+{% block content %}
+<style>
+    .boton_anadiscanales {
+        margin-top: 40px;
+        margin-left: 95%;
+        margin-bottom: -40px;
+    }
+
+    .lbl-modal {
+        color: #FFFFFF;
+        padding: 5px 8px;
+        font-size: 30px;
+        background-color: #262626;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .lbl-modal:hover {
+        background-color: #404040;
+    }
+
+    .cerrar {
+        color: #FFFFFF;
+        padding: 2px 10px;
+        margin-left: 95%;
+        font-size: 20px;
+        background-color: #3C4043;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .cerrar:hover {
+        background-color: #4a5053;
+    }
+
+    .modal {
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        transition: all 500ms ease;
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    #btn-modal:checked~.modal {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .caja {
+        width: 500px;
+        height: 500px;
+        margin: auto;
+        background-color: #1E1E1E;
+        border-radius: 15px;
+        transition: all 500ms ease;
+        position: relative;
+        transform: translateY(-30%);
+    }
+
+    #btn-modal:checked~.modal .caja {
+        transform: translateY(0%);
+    }
+
+    #btn-modal {
+        display: none;
+    }
+</style>
+<div class="boton_anadiscanales">
+    <input type="checkbox" id="btn-modal"><label for="btn-modal" class="lbl-modal">✚</label>
+    <div class="modal">
+        <div class="caja overflow-auto flex-initial w-700 p-10 lg:p-20">
+            <label class="cerrar" for="btn-modal">✘</label>
+            <h1 class="text-3xl text-white text-center">Añadir canal</h1>
+            <form method="post" action="">
+                {%csrf_token%}
+                <div class="mb-5">
+                    <label class="text-lg text-white" for="id_nombrecanal">Nombre del canal: </label>
+                    <input type="tex" name="nombrecanal" class="w-full mt-2 px-4 py-2 rounded-xl" required
+                        id="id_nombrecanal">
+                </div>
+                <div class="mb-5">
+                    <label class="text-lg text-white" for="id_estatus_canal">Estatus canal: </label>
+                    <select name="estatus_canal" class="w-full mt-2 px-4 py-2 rounded-xl" id="id_estatus_canal">
+                        <option value="ABIERTO">Abierto</option>
+                        <option value="CERRADO">Cerrado</option>                      
+                    </select>
+                </div>
+                <div class="mb-5">
+                    <label class="text-lg text-white" for="id_slug">Url canal: </label>
+                    <input type="text" name="slug" required class="w-full mt-2 px-4 py-2 rounded-xl" required
+                        id="id_slug" placeholder="Abreviatura para su canal...">
+                </div>
+                <div class="mb-5">
+                    <label class="text-lg text-white" for="id_slug">Proyecto(en que proyecto se añade): </label>
+                    <select type="text" name="fk_proyecto" required class="w-full mt-2 px-4 py-2 rounded-xl" required>
+                        {%for proyecto in proyectos%}
+                        <option value="{{proyecto.idproyecto}}">{{proyecto.nombreproyecto}}</option>
+                        {%endfor%}
+                    </select>
+                </div>
+                <div class="mb-5">
+                    <label class="text-lg text-white" for="id_fk_usuario">Usuario(quien crea el canal): </label>
+                    <select type="text" name="fk_usuario" required class="w-full mt-2 px-4 py-2 rounded-xl" required>
+                        {%for usuario in usuarios%}
+                        <option value="{{usuario.id}}" selected="{{request.user.username}}">{{usuario.username}}</option>
+                        {%endfor%}
+                    </select>
+                </div>
+                <button class="botoncrear px-5 py-3 rounded-xl text-white bg-lime-700 hover:bg-lime-600"
+                    type="submit">Crear canal</button>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- ----------------------------------------- -->
+<div class="flex-initial w-700 p-10 lg:p-10 text-center">
+    <h1 class="text-3xl lg:text-6xl text-white"><br>Canales</h1>
+</div>
+<div class="w-full flex flex-wrap items-center">
+    {% for canal in canales %}
+    <div class="w-full lg:w-1/4 px-3 py-3">
+        <div class="p-4 bg-white shadow rounded-xl text-center">
+            <h2 class="mb-5 text-2xl font-simibold"> # {{ canal.nombrecanal }}</h2>
+            <a href="{% url 'canalesVista' canal.slug %}"
+                class="px-5 py-3 block rounded-xl text-white bg-neutral-800 hover:bg-neutral-700">Unirse</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

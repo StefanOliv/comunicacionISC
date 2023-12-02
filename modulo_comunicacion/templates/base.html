@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %} {% endblock %} Modulo Comunicacion </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    {% if request.user.is_authenticated %}
+    <style>
+        .chat-messages {
+            height: 400px;
+            overflow-y: auto;
+        }
+
+        .titulo_mensdi {
+            padding-bottom: 15px;
+        }
+
+        .mensajesdirectos {
+            width: 300px;
+            height: 649px;
+            color: #ffffff;
+            font-size: 1.2rem;
+            background-color: #323232;
+            padding-top: 30px;
+            text-align: center;
+        }
+
+        .contedorpriv {
+            display: flex;
+        }
+
+        .usuarioslink {
+            color: yellow;
+            display: block;
+            padding: 10px;
+        }
+
+        .usuarioslink:hover {
+            background-color: #1E1E1E;
+        }
+
+        .file-select {
+            position: relative;
+            display: inline-block;
+            margin-left: 10PX;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .file-select::before {
+            background-color: #336b67;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 3px;
+            content: 'Seleccinar archivo';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            cursor: pointer;
+        }
+
+        .file-select input[type="file"] {
+            opacity: 0;
+            width: 200px;
+            height: 32px;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .contenedorchat {
+            display: flex;
+        }
+    </style>
+    {%endif%}
+    <style>
+        .contenedor_msg {
+            background-color: #ffffff;
+            width: 854px;
+            padding: 15px;
+            display: flex;
+        }
+
+        .contenedorMensj {
+            padding-left: 25px;
+        }
+
+        .mensajesDir {
+            height: 450px;
+            width: 850px;
+            margin-left: 25px;
+            margin-bottom: 0px;
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+
+<body class="bg-neutral-600">
+    <nav class="flex items-center justify-between px-4 py-6 bg-neutral-900">
+        <div>
+            <a href="{%url 'index'%}" class="text-lg text-white">Modulo Comunicacion</a>
+        </div>
+        <div class="flex items-center space-x-4">
+            {% if request.user.is_authenticated %}
+            <!-- <a href="/registro_proyecto/" class="text-white hover:text-orange-300">Registrar proyecto</a> -->
+            <a href="/canales/" class="px-5 py-3 rounded-xl text-white bg-neutral-800 hover:bg-neutral-700">Canales</a>
+            <a href="/logout/" class="px-5 py-3 rounded-xl text-white bg-neutral-800 hover:bg-neutral-700">Salir</a>
+            {% else %}
+
+            <a href="/login/" class="text-white hover:text-orange-300">Login</a>
+            <a href="/registro_usuario/"
+                class="px-5 py-3 rounded-xl text-white bg-neutral-800 hover:bg-neutral-700">Registro</a>
+            {%endif%}
+        </div>
+    </nav>
+
+    {% block content %}
+    {% endblock %}
+
+    {% block scripts %}
+    {% endblock %}
+</body>
+
+</html>
